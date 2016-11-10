@@ -8,6 +8,7 @@ module EntityProjection
       cls.extend Info
       cls.extend ApplyMacro
       cls.extend MessageRegistry
+      cls.extend EntityNameMacro
 
       virtual :configure
 
@@ -100,6 +101,15 @@ module EntityProjection
     def message_registry
       @message_registry ||= Messaging::MessageRegistry.new
     end
+  end
+
+  module EntityNameMacro
+    def entity_name_macro(entity_name)
+      send(:define_method, entity_name) do
+        entity
+      end
+    end
+    alias :entity_name :entity_name_macro
   end
 
   def call(message_or_event_data)

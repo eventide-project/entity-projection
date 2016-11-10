@@ -5,8 +5,10 @@ module EntityProjection
         include EntityProjection
         include Controls::Message
 
+        entity_name :some_entity
+
         apply SomeMessage do |some_message|
-          entity.some_attribute = some_message.some_attribute
+          some_entity.some_attribute = some_message.some_attribute
         end
       end
 
