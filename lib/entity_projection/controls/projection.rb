@@ -1,14 +1,14 @@
 module EntityProjection
   module Controls
     module Projection
-      # class Example
-      #   include EntityProjection
-      #   include Controls::Message
+      class Example
+        include EntityProjection
+        include Controls::Message
 
-      #   apply SomeMessage do |some_message|
-      #     some_message.some_attribute = 'some value set by handler'
-      #   end
-      # end
+        apply SomeMessage do |some_message|
+          entity.some_attribute = some_message.some_attribute
+        end
+      end
 
       module ApplyMethod
         class Example
@@ -36,7 +36,7 @@ module EntityProjection
       # end
 
       module Anomaly
-        module NoHandle
+        module NoApply
           class Example
             include EntityProjection
           end

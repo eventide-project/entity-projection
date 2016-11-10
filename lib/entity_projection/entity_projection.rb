@@ -6,7 +6,7 @@ module EntityProjection
       cls.extend Build
       cls.extend Call
       cls.extend Info
-      # cls.extend ApplyMacro
+      cls.extend ApplyMacro
       cls.extend MessageRegistry
 
       virtual :configure
@@ -53,6 +53,42 @@ module EntityProjection
     end
   end
 
+  module ApplyMacro
+    class Error < RuntimeError; end
+
+    def logger
+      @logger ||= Log.get(self)
+    end
+
+    def apply_macro(message_class, &blk)
+      define_apply_method(message_class, &blk)
+      message_registry.register(message_class)
+    end
+    alias :apply :apply_macro
+
+    def define_apply_method(message_class, &blk)
+      apply_method_name = handler_name(message_class)
+
+      if blk.nil?
+        error_msg = "Handler for #{message_class.name} is not correctly defined. It must have a block."
+        logger.error { error_msg }
+        raise Error, error_msg
+      end
+
+      send(:define_method, apply_method_name, &blk)
+
+      apply_method = instance_method(apply_method_name)
+
+      unless apply_method.arity == 1
+        error_msg = "Handler for #{message_class.name} is not correctly defined. It can only have a single parameter."
+        logger.error { error_msg }
+        raise Error, error_msg
+      end
+
+      apply_method_name
+    end
+  end
+
   module Call
     def call(entity, message_or_event_data)
       instance = build(entity)
@@ -67,11 +103,27 @@ module EntityProjection
   end
 
   def call(message_or_event_data)
-    # if message_or_event_data.is_a? Message
-    #   handle_message(message_or_event_data)
-    # else
+    if message_or_event_data.is_a? Messaging::Message
+      handle_message(message_or_event_data)
+    else
       handle_event_data(message_or_event_data)
-    # end
+    end
+  end
+
+  def handle_message(message)
+    logger.trace(tags: [:handle, :message]) { "Applying message (Message class: #{message.class.name})" }
+    logger.trace(tags: [:data, :message, :handle]) { message.pretty_inspect }
+
+    handler = self.class.handler(message)
+
+    unless handler.nil?
+      public_send(handler, message)
+    end
+
+    logger.info(tags: [:handle, :message]) { "Applied message (Message class: #{message.class.name})" }
+    logger.trace(tags: [:data, :message, :handle]) { message.pretty_inspect }
+
+    message
   end
 
   def handle_event_data(event_data)
