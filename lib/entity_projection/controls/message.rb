@@ -1,4 +1,4 @@
-class EntityProjection
+module EntityProjection
   module Controls
     Message = Messaging::Controls::Message
   end
