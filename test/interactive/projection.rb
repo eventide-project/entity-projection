@@ -79,7 +79,6 @@ logger.debug batch.pretty_inspect, tags: [:test, :data]
 
 account = Account.new
 
-# EventSource::Postgres::Read.(stream_name, delay_milliseconds: 10, timeout_milliseconds: 2000) do |event_data|
 EventSource::Postgres::Read.(stream_name) do |event_data|
   logger.debug "Read event data", tag: :test
   logger.debug event_data.pretty_inspect, tags: [:test, :data]
