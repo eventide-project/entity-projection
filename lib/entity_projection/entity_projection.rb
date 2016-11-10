@@ -1,0 +1,2 @@
+class EntityProjection
+end
