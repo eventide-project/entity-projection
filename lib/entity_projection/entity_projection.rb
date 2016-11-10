@@ -135,10 +135,10 @@ module EntityProjection
     handler = self.class.handler(event_data)
 
     unless handler.nil?
-      # message_name = Messaging::Message::Info.canonize_name(event_data.type)
-      # message_class = self.class.message_registry.get(message_name)
-      # res = Message::Import.(event_data, message_class)
-      # public_send(handler, res)
+      message_name = Messaging::Message::Info.canonize_name(event_data.type)
+      message_class = self.class.message_registry.get(message_name)
+      res = Messaging::Message::Import.(event_data, message_class)
+      public_send(handler, res)
     else
       if respond_to?(:apply)
         res = apply(event_data)

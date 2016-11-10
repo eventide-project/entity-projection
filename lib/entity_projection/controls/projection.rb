@@ -20,20 +20,20 @@ module EntityProjection
         end
       end
 
-      # module BlockAndHandleMethod
-      #   class Example
-      #     include Messaging::Handle
-      #     include Controls::Message
+      module BlockAndApplyMethod
+        class Example
+          include EntityProjection
+          include Controls::Message
 
-      #     handle SomeMessage do |some_message|
-      #       some_message.some_attribute = 'some attribute value set by handler'
-      #     end
+          apply SomeMessage do |some_message|
+            entity.some_attribute = 'some attribute value set by apply block'
+          end
 
-      #     def handle(event_data)
-      #       event_data.data = 'some data value set by handler'
-      #     end
-      #   end
-      # end
+          def apply(event_data)
+            event_data.data = 'some data value set by apply method'
+          end
+        end
+      end
 
       module Anomaly
         module NoApply
