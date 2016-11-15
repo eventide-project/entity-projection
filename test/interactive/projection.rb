@@ -21,6 +21,7 @@ module Events
   end
 end
 
+
 class Account
   include Schema::DataStructure
 
