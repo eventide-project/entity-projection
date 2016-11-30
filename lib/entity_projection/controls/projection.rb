@@ -17,7 +17,7 @@ module EntityProjection
           include EntityProjection
 
           def apply(event_data)
-            entity.some_attribute = event_data.data[:some_attribute]
+            entity.some_attribute = event_data.data[:attribute]
           end
         end
       end

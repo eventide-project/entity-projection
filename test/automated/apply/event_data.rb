@@ -3,6 +3,7 @@ require_relative '../automated_init'
 context "Apply" do
   context "EventData" do
     event_data = EntityProjection::Controls::EventData::Read.example
+    event_data.data[:attribute] = 'some value'
 
     context "Projection Implements Apply" do
       entity = EntityProjection::Controls::Entity::New.example
