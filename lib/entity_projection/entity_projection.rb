@@ -114,13 +114,13 @@ module EntityProjection
 
   def call(message_or_event_data)
     if message_or_event_data.is_a? Messaging::Message
-      handle_message(message_or_event_data)
+      apply_message(message_or_event_data)
     else
       handle_event_data(message_or_event_data)
     end
   end
 
-  def handle_message(message)
+  def apply_message(message)
     logger.trace(tags: [:handle, :message]) { "Applying message (Message class: #{message.class.name})" }
     logger.trace(tags: [:data, :message, :handle]) { message.pretty_inspect }
 
