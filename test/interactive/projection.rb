@@ -91,7 +91,7 @@ withdrawn = Events::Withdrawn.build({
 
 account_id = Identifier::UUID::Random.get
 
-stream_name = Messaging::StreamName.stream_name(account_id, 'account')
+stream_name = Messaging::Postgres::StreamName.stream_name(account_id, 'account')
 
 batch = [opened, deposited, withdrawn]
 
