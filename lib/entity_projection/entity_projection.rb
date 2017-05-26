@@ -7,7 +7,7 @@ module EntityProjection
       cls.extend Call
       cls.extend Info
       cls.extend ApplyMacro
-      cls.extend MessageRegistry
+      cls.extend EventRegistry
       cls.extend EntityNameMacro
 
       virtual :configure
@@ -27,8 +27,8 @@ module EntityProjection
   module Info
     extend self
 
-    def handler(message_or_event_data)
-      name = handler_name(message_or_event_data)
+    def handler(event_or_event_data)
+      name = handler_name(event_or_event_data)
 
       if method_defined?(name)
         return name
@@ -37,17 +37,19 @@ module EntityProjection
       end
     end
 
-    def handles?(message_or_event_data)
-      method_defined? handler_name(message_or_event_data)
+    def handles?(event_or_event_data)
+      handler_name = self.handler_name(event_or_event_data)
+
+      method_defined?(handler_name)
     end
 
-    def handler_name(message_or_event_data)
+    def handler_name(event_or_event_data)
       name = nil
 
-      if message_or_event_data.is_a? EventSource::EventData::Read
-        name = Messaging::Message::Info.canonize_name(message_or_event_data.type)
+      if event_or_event_data.is_a?(MessageStore::MessageData::Read)
+        name = Messaging::Message::Info.canonize_name(event_or_event_data.type)
       else
-        name = message_or_event_data.message_name
+        name = event_or_event_data.message_name
       end
 
       "apply_#{name}"
@@ -61,17 +63,17 @@ module EntityProjection
       @logger ||= Log.get(self)
     end
 
-    def apply_macro(message_class, &blk)
-      define_apply_method(message_class, &blk)
-      message_registry.register(message_class)
+    def apply_macro(event_class, &blk)
+      define_apply_method(event_class, &blk)
+      event_registry.register(event_class)
     end
     alias :apply :apply_macro
 
-    def define_apply_method(message_class, &blk)
-      apply_method_name = handler_name(message_class)
+    def define_apply_method(event_class, &blk)
+      apply_method_name = handler_name(event_class)
 
       if blk.nil?
-        error_msg = "Handler for #{message_class.name} is not correctly defined. It must have a block."
+        error_msg = "Handler for #{event_class.name} is not correctly defined. It must have a block."
         logger.error { error_msg }
         raise Error, error_msg
       end
@@ -81,7 +83,7 @@ module EntityProjection
       apply_method = instance_method(apply_method_name)
 
       unless apply_method.arity == 1
-        error_msg = "Handler for #{message_class.name} is not correctly defined. It can only have a single parameter."
+        error_msg = "Handler for #{event_class.name} is not correctly defined. It can only have a single parameter."
         logger.error { error_msg }
         raise Error, error_msg
       end
@@ -91,15 +93,15 @@ module EntityProjection
   end
 
   module Call
-    def call(entity, message_or_event_data)
+    def call(entity, event_or_event_data)
       instance = build(entity)
-      instance.(message_or_event_data)
+      instance.(event_or_event_data)
     end
   end
 
-  module MessageRegistry
-    def message_registry
-      @message_registry ||= Messaging::MessageRegistry.new
+  module EventRegistry
+    def event_registry
+      @event_registry ||= Messaging::MessageRegistry.new
     end
   end
 
@@ -112,28 +114,28 @@ module EntityProjection
     alias :entity_name :entity_name_macro
   end
 
-  def call(message_or_event_data)
-    if message_or_event_data.is_a? Messaging::Message
-      apply_message(message_or_event_data)
+  def call(event_or_event_data)
+    if event_or_event_data.is_a?(Messaging::Message)
+      apply_event(event_or_event_data)
     else
-      apply_event_data(message_or_event_data)
+      apply_event_data(event_or_event_data)
     end
   end
 
-  def apply_message(message)
-    logger.trace(tags: [:apply, :message]) { "Applying message (Message class: #{message.class.name})" }
-    logger.trace(tags: [:data, :message, :apply]) { message.pretty_inspect }
+  def apply_event(event)
+    logger.trace(tags: [:apply, :message]) { "Applying event (Event class: #{event.class.name})" }
+    logger.trace(tags: [:data, :message, :apply]) { event.pretty_inspect }
 
-    handler = self.class.handler(message)
+    handler = self.class.handler(event)
 
     unless handler.nil?
-      public_send(handler, message)
+      public_send(handler, event)
     end
 
-    logger.info(tags: [:apply, :message]) { "Applied message (Message class: #{message.class.name})" }
-    logger.trace(tags: [:data, :message, :apply]) { message.pretty_inspect }
+    logger.info(tags: [:apply, :message]) { "Applied event (Event class: #{event.class.name})" }
+    logger.trace(tags: [:data, :message, :apply]) { event.pretty_inspect }
 
-    message
+    event
   end
 
   def apply_event_data(event_data)
@@ -145,9 +147,9 @@ module EntityProjection
     handler = self.class.handler(event_data)
 
     unless handler.nil?
-      message_name = Messaging::Message::Info.canonize_name(event_data.type)
-      message_class = self.class.message_registry.get(message_name)
-      res = Messaging::Message::Import.(event_data, message_class)
+      event_name = Messaging::Message::Info.canonize_name(event_data.type)
+      event_class = self.class.event_registry.get(event_name)
+      res = Messaging::Message::Import.(event_data, event_class)
       public_send(handler, res)
     else
       if respond_to?(:apply)

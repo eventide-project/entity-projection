@@ -8,8 +8,8 @@ context "Handle" do
       assert(projection.respond_to? :apply_some_message)
     end
 
-    test "Registers message classes" do
-      assert(projection.class.message_registry.registered? EntityProjection::Controls::Message::SomeMessage)
+    test "Registers event classes" do
+      assert(projection.class.event_registry.registered? EntityProjection::Controls::Message::SomeMessage)
     end
   end
 end
