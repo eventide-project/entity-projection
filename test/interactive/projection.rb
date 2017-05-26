@@ -91,7 +91,7 @@ withdrawn = Events::Withdrawn.build({
 
 account_id = Identifier::UUID::Random.get
 
-stream_name = Messaging::Postgres::StreamName.stream_name(account_id, 'account')
+stream_name = Messaging::StreamName.stream_name(account_id, 'account')
 
 batch = [opened, deposited, withdrawn]
 
@@ -106,8 +106,8 @@ logger.debug batch.pretty_inspect, tags: [:test, :data]
 
 account = Account.new
 
-EventSource::Postgres::Read.(stream_name) do |event_data|
-  logger.debug "Read event data", tag: :test
+MessageStore::Postgres::Read.(stream_name) do |event_data|
+  logger.debug "Read message data", tag: :test
   logger.debug event_data.pretty_inspect, tags: [:test, :data]
 
   Projection.(account, event_data)
