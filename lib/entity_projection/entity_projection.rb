@@ -3,12 +3,12 @@ module EntityProjection
     cls.class_exec do
       include Log::Dependency
 
-      cls.extend Build
-      cls.extend Call
-      cls.extend Info
-      cls.extend ApplyMacro
-      cls.extend EventRegistry
-      cls.extend EntityNameMacro
+      extend Build
+      extend Call
+      extend Info
+      extend ApplyMacro
+      extend EventRegistry
+      extend EntityNameMacro
 
       virtual :configure
 
