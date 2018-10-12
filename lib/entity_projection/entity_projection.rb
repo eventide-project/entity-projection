@@ -1,9 +1,8 @@
 module EntityProjection
   def self.included(cls)
     cls.class_exec do
-      Initializer.activate(self)
-      Virtual.activate(self)
-
+      include Initializer
+      include Virtual
       include Log::Dependency
 
       extend Build
