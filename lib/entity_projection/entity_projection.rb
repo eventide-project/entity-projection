@@ -125,8 +125,8 @@ module EntityProjection
   end
 
   def apply_event(event)
-    logger.trace(tags: [:apply, :message]) { "Applying event (Event class: #{event.class.name})" }
-    logger.trace(tags: [:data, :message, :apply]) { event.pretty_inspect }
+    logger.trace(tag: :apply) { "Applying event (Event class: #{event.class.name})" }
+    logger.trace(tags: [:data, :message]) { event.pretty_inspect }
 
     handler = self.class.handler(event)
 
@@ -134,15 +134,15 @@ module EntityProjection
       public_send(handler, event)
     end
 
-    logger.info(tags: [:apply, :message]) { "Applied event (Event class: #{event.class.name})" }
-    logger.trace(tags: [:data, :message, :apply]) { event.pretty_inspect }
+    logger.info(tag: :apply) { "Applied event (Event class: #{event.class.name})" }
+    logger.trace(tags: [:data, :message]) { event.pretty_inspect }
 
     event
   end
 
   def apply_event_data(event_data)
-    logger.trace(tags: [:apply, :event_data]) { "Applying event data (Type: #{event_data.type})" }
-    logger.trace(tags: [:data, :event_data, :apply]) { event_data.pretty_inspect }
+    logger.trace(tag: :apply) { "Applying event data (Type: #{event_data.type})" }
+    logger.trace(tags: [:data, :message_data]) { event_data.pretty_inspect }
 
     res = nil
 
@@ -159,8 +159,8 @@ module EntityProjection
       end
     end
 
-    logger.info(tags: [:apply, :event_data]) { "Applied event data (Type: #{event_data.type})" }
-    logger.info(tags: [:data, :event_data, :apply]) { event_data.pretty_inspect }
+    logger.info(tag: :apply) { "Applied event data (Type: #{event_data.type})" }
+    logger.info(tags: [:data, :message_data]) { event_data.pretty_inspect }
 
     res
   end
