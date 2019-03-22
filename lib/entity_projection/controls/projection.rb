@@ -37,6 +37,15 @@ module EntityProjection
         end
       end
 
+      module RegisterMessageClass
+        class Example
+          include EntityProjection
+          include Controls::Message
+
+          register SomeMessage
+        end
+      end
+
       module Anomaly
         module NoApply
           class Example

@@ -10,6 +10,7 @@ module EntityProjection
       extend Info
       extend ApplyMacro
       extend EventRegistry
+      extend Register
       extend EntityNameMacro
 
       virtual :configure
@@ -104,6 +105,12 @@ module EntityProjection
   module EventRegistry
     def event_registry
       @event_registry ||= Messaging::MessageRegistry.new
+    end
+  end
+
+  module Register
+    def register(event_class)
+      event_registry.register(event_class)
     end
   end
 
