@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name = 'evt-entity_projection'
-  s.version = '1.0.1.1'
+  s.version = '1.0.1.2'
   s.summary = 'Projects event data into an entity'
   s.description = ' '
 
