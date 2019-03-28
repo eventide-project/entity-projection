@@ -49,7 +49,7 @@ module EntityProjection
     def handler_name(event_or_event_data)
       name = nil
 
-      if event_or_event_data.is_a?(MessageStore::MessageData::Read)
+      if event_or_event_data.is_a?(MessageStore::MessageData)
         name = Messaging::Message::Info.canonize_name(event_or_event_data.type)
       else
         name = event_or_event_data.message_name
