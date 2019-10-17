@@ -4,7 +4,7 @@ context "Apply" do
   context "Macro" do
     context "Handler Block Without Parameter" do
       test "Is an error" do
-        assert_raises EntityProjection::ApplyMacro::Error do
+        assert_raises(EntityProjection::ApplyMacro::Error) do
           Class.new do
             include EntityProjection
 
