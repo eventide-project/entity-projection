@@ -13,11 +13,23 @@ module EntityProjection
       end
 
       module ApplyMethod
-        class Example
-          include EntityProjection
+        module EventData
+          class Example
+            include EntityProjection
 
-          def apply(event_data)
-            entity.some_attribute = event_data.data[:attribute]
+            def apply(event_data)
+              entity.some_attribute = event_data.data[:attribute]
+            end
+          end
+        end
+
+        module Message
+          class Example
+            include EntityProjection
+
+            def apply(message)
+              entity.some_attribute = message.some_attribute
+            end
           end
         end
       end

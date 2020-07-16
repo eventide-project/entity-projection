@@ -139,6 +139,10 @@ module EntityProjection
 
     unless handler.nil?
       public_send(handler, event)
+    else
+      if respond_to?(:apply)
+        apply(event)
+      end
     end
 
     logger.info(tag: :apply) { "Applied event (Event class: #{event.class.name})" }
