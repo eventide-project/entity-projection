@@ -1,7 +1,6 @@
 module EntityProjection
   def self.included(cls)
     cls.class_exec do
-      include Initializer
       include Virtual
       include Log::Dependency
 
@@ -14,9 +13,13 @@ module EntityProjection
       extend EntityNameMacro
 
       virtual :configure
-
-      initializer :entity
     end
+  end
+
+  attr_reader :entity
+
+  def initialize(entity)
+    @entity = entity
   end
 
   module Build
