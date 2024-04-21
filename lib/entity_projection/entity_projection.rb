@@ -2,7 +2,7 @@ module EntityProjection
   def self.included(cls)
     cls.class_exec do
       include Initializer
-      include Virtual
+      include TemplateMethod
       include Log::Dependency
 
       extend Build
@@ -13,7 +13,7 @@ module EntityProjection
       extend Register
       extend EntityNameMacro
 
-      virtual :configure
+      template_method :configure
 
       initializer :entity
     end
