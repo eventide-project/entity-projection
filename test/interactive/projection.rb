@@ -36,7 +36,7 @@ class Account
 
   attribute :id, String
   attribute :customer_id, String
-  attribute :balance, Numeric, default: 0
+  attribute :balance, Numeric, default: proc { 0 }
   attribute :opened_time, Time
   attribute :last_transaction_time, Time
 
